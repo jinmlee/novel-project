@@ -4,36 +4,27 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 >
 <div class="container" th:fragment="headerFragment">
-    <header class="d-flex flex-wrap justify-content-center align-items-center py-3 border-bottom">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <i class="bi bi-house" style="font-size: 3rem"></i>
+            <img src="/images/alien.png" />
         </a>
         <div sec:authorize="!isAuthenticated()">
-            <div class="nav nav-fill">
-                <a th:href="@{/auth/join}" class="fs-3 mx-2 text-dark">
-                    <i class="bi bi-person-plus-fill" style="font-size: 3rem"></i>
-                </a>
-                <a th:href="@{/auth/login}" class="fs-3 mx-2 text-dark">
-                    <i class="bi bi-person-fill-lock" style="font-size: 3rem"></i>
-                </a>
-            </div>
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a href="/" class="nav-link" aria-current="page">Home</a></li>
+                <li class="nav-item"><a href="/board/list.html" th:href="@{/board/list02}" class="nav-link">board</a></li>
+                <li class="nav-item"><a href="/board/list.html" th:href="@{/member/join}" class="nav-link">join</a></li>
+                <li class="nav-item"><a href="/board/list.html" th:href="@{/member/login}" class="nav-link">login</a></li>
+            </ul>
         </div>
         <div sec:authorize="isAuthenticated()">
-            <div class="nav nav-fill">
-                <a th:href="@{/member/myBookList}" class="fs-3 mx-2 text-dark">
-                    <i class="bi bi-collection" style="font-size: 3rem"></i>
-                </a>
-                <a th:href="@{/book/write}" class="fs-3 mx-2 text-dark">
-                    <i class="bi bi-pen" style="font-size: 3rem"></i>
-                </a>
-                <a th:href="@{/book/library}" class="fs-3 mx-2 text-dark">
-                    <i class="bi bi-book" style="font-size: 3rem"></i>
-                </a>
-                <a th:href="@{/auth/logout}" class="fs-3 mx-2 text-dark">
-                    <i class="bi bi-door-open" style="font-size: 3rem"></i>
-                </a>
-
-            </div>
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a href="/" class="nav-link" aria-current="page">Home</a></li>
+                <li class="nav-item"><a href="/board/list.html" th:href="@{/board/list02}" class="nav-link">board</a></li>
+                <li class="nav-item"><a href="/board/list.html" th:href="@{/member/join}" class="nav-link"
+                                        th:text="${#authentication.principal.loggedMember.nickName}"
+                >김승환</a></li>
+                <li class="nav-item"><a href="/board/list.html" th:href="@{/member/logout}" class="nav-link">logout</a></li>
+            </ul>
         </div>
     </header>
 </div>

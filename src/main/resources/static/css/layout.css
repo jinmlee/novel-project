@@ -1,105 +1,60 @@
-.findPassword {
-    font-size: 15px;
-    color: #c4c8cb;
+.main {
+  min-height: 500px;
 }
-.join{
-    width: 1200px;
+.main h2 {
+  margin: 30px 0;
 }
-.valid {
-    font-size: 15px;
-    color: forestgreen;
-}
-.invalid {
-    font-size: 15px;
-    color: red;
-}
+
 .error {
-    font-size: 15px;
-    color: red;
+  font-size: 12px;
+  color: #f00;
+  margin-top: 10px;
+}
+#viewModal .modal-content {
+  white-space: pre-wrap;
+}
+
+.even td,.even th {
+  background-color: #ccc !important;
 }
 
 ul {
-    list-style-type: none;
+  padding-left: 0;
+}
+.comment {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding:5px 0;
+  border-bottom:1px solid #eee;
+}
+.comment .date {
+  font-size: 12px;
+}
+.btn-del {
+  cursor: pointer;
+}
+.writerInfo{
+  padding: 10px;
+  background-color: #eee;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  align-self: flex-start;
+  font-size: 12px;
+  margin-left: 50px;
+  min-width: 120px;
+}
+.text-box{
+  width: 900px;
 }
 
-
-.subj {
-    text-decoration: none;
-}
-
-.subj:hover {
-    text-decoration: underline;
-}
-
-.info-top {
-    margin-bottom: 20px;
-}
-
-.info-bottom {
-    margin-top: 50px;
-    margin-bottom: 10px;
-    padding-top: 40px;
-}
-
-.custom-link {
-    color: #000000;
-    text-decoration: none;
-}
-
-.custom-link:hover {
-    text-decoration: underline;
-}
-
-.chapter-list ul li:not(:last-child) {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-}
-
-
-.custom-dropdown-item {
-    text-decoration: none;
-    color: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.custom-dropdown-item:hover {
-    color: #0b5ed7;
-}
-
-.dropdown-menu li {
-    display: block;
-    box-sizing: border-box;
-    padding: 0 2px;
-    margin: 0;
-}
-
-.delete-book a {
-    color: black;
-    text-decoration: none;
-}
-
-.delete-book a:hover {
-    color: red;
-    text-decoration: underline;
-}
-
-a.btn-sort {
-    text-decoration: none;
-    color: dimgrey;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-a.btn-sort.active {
-    text-decoration: none;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: black;
-}
-
-.custom-order a {
-    text-decoration: none;
-    color: black;
-    font-size: x-large;
+.input-file-button{
+  padding: 6px 25px;
+  background-color:#FF6600;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
 }
