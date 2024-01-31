@@ -1,3 +1,4 @@
+/*board*/
 .main {
   min-height: 500px;
 }
@@ -57,4 +58,32 @@ ul {
   border-radius: 4px;
   color: white;
   cursor: pointer;
+}
+
+.gnb_li .nav-pills .gnb_login .gnb_txt,
+.gnb_li .nav-pills .gnb_myPage .gnb_txt {
+  color: black;
+
+  text-decoration: none !important;
+}
+
+/*member*/
+.findPassword {
+  font-size: 15px;
+  color: #c4c8cb;
+}
+.join{
+  width: 1200px;
+}
+.valid {
+  font-size: 15px;
+  color: forestgreen;
+}
+.invalid {
+  font-size: 15px;
+  color: red;
+}
+.error {
+  font-size: 15px;
+  color: red;
 }

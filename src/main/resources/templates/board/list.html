@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
 <head>
     <meta charset="UTF-8">
     <title>list</title>
@@ -8,7 +10,7 @@
     <script src="/js/bootstrap.bundle.js"></script>
 </head>
 <body>
-<div class="container">
+<div layout:fragment="content" class="container">
     <table class="table">
         <tr>
             <th>id</th>

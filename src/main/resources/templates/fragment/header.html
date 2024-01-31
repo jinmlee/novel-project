@@ -1,31 +1,40 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th= "http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
->
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <div class="container" th:fragment="headerFragment">
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <img src="/images/alien.png" />
-        </a>
-        <div sec:authorize="!isAuthenticated()">
-            <ul class="nav nav-pills">
-                <li class="nav-item"><a href="/" class="nav-link" aria-current="page">Home</a></li>
-                <li class="nav-item"><a href="/board/list.html" th:href="@{/board/list02}" class="nav-link">board</a></li>
-                <li class="nav-item"><a href="/board/list.html" th:href="@{/member/join}" class="nav-link">join</a></li>
-                <li class="nav-item"><a href="/board/list.html" th:href="@{/member/login}" class="nav-link">login</a></li>
-            </ul>
+    <div class="header">
+        <div class="header-inner d-flex justify-content-between align-items-center py-3 border-bottom">
+            <!-- gnb -->
+            <div class="sta">
+                <h1>
+                    <a href="/static" th:href="@{/}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                        <img src="/images/writer.png" alt="" class="logo mx-3"><span style="font-size: 30px; font-weight: bold">Community</span>
+                    </a>
+                </h1>
+            </div>
+
+            <div sec:authorize="!isAuthenticated()">
+                <div class="gnb_li">
+                    <ul class="nav nav-pills">
+                        <li class="mx-2">
+                            <a href="/board/notice" class="gnb_login">
+                                <span class="gnb_bg"></span>
+                                <span class="gnb-bdr"></span>
+                                <span class="gnb_txt">공지사항</span>
+                            </a>
+                        </li>
+                        <li class="mx-2">
+                            <a href="/board/list" class="gnb_myPage">
+                                <span class="gnb_bg"></span>
+                                <span class="gnb-bdr"></span>
+                                <span class="gnb_txt">자유게시판</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        <div sec:authorize="isAuthenticated()">
-            <ul class="nav nav-pills">
-                <li class="nav-item"><a href="/" class="nav-link" aria-current="page">Home</a></li>
-                <li class="nav-item"><a href="/board/list.html" th:href="@{/board/list02}" class="nav-link">board</a></li>
-                <li class="nav-item"><a href="/board/list.html" th:href="@{/member/join}" class="nav-link"
-                                        th:text="${#authentication.principal.loggedMember.nickName}"
-                >김승환</a></li>
-                <li class="nav-item"><a href="/board/list.html" th:href="@{/member/logout}" class="nav-link">logout</a></li>
-            </ul>
-        </div>
-    </header>
+    </div>
 </div>
 </html>
