@@ -74,4 +74,7 @@ public class BoardDto {
         return boardDto;
     }
 
+    public void setMemberId(String memberId) {
+        this.member_id = memberId;
+    }
 }

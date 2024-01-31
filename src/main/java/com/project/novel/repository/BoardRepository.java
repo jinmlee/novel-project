@@ -8,12 +8,19 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 
 public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
 
     @Modifying
     @Query(value = "update BoardEntity b set b.hit=b.hit+1 where b.id=:id")
     void updateHit(@Param("id") Long id);
+
+
+    @Query("SELECT b FROM BoardEntity b ORDER BY b.id DESC")
+    List<BoardEntity> findAllDesc();
+
 
     // 제목으로 검색
     Page<BoardEntity> findBySubjectContaining(String title, Pageable pageable);

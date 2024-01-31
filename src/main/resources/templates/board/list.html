@@ -4,10 +4,7 @@
       layout:decorate="~{/layout/layout}">
 <head>
     <meta charset="UTF-8">
-    <title>list</title>
-    <link rel="stylesheet" href="/css/bootstrap.css">
-    <link rel="stylesheet" href="/css/layout.css">
-    <script src="/js/bootstrap.bundle.js"></script>
+    <title>community</title>
 </head>
 <body>
 <div layout:fragment="content" class="container">
@@ -44,51 +41,53 @@
                            th:value="${param.keyword}">
                 </div>
                 <div class="col-2">
-                    <button type="submit" class="btn btn-primary">검색</button>
+                    <button type="submit" class="btn btn-dark text-light">검색</button>
                 </div>
             </div>
         </form>
     </div>
 
     <div class="mt-5 d-flex justify-content-center">
-        <a href="/board/write" class="btn btn-primary">글쓰기</a>
+        <a href="/board/write" class="btn btn-dark text-light">글쓰기</a>
     </div>
-</div>
 
+    <nav aria-label="Page navigation example" class="mt-5 d-flex justify-content-center">
+        <ul class="pagination">
 
+            <!-- 첫 페이지 링크 -->
+            <li class="page-item" th:classappend="${boardList.isFirst() ? 'disabled' : ''}">
+                <a class="page-link" th:href="@{/board/list(page=0, category=${category}, keyword=${keyword})}">&laquo;&laquo;</a>
+            </li>
 
-<nav aria-label="Page navigation example" class="mt-5 d-flex justify-content-center">
-    <ul class="pagination">
+            <!-- 이전 페이지 링크 -->
+            <li class="page-item" th:classappend="${boardList.isFirst() ? 'disabled' : ''}">
+                <a class="page-link"
+                   th:href="@{/board/list(page=${currentPage - 2}, category=${category}, keyword=${keyword})}">&laquo;</a>
+            </li>
 
-        <!-- 첫 페이지 링크 -->
-        <li class="page-item" th:classappend="${boardList.isFirst() ? 'disabled' : ''}">
-            <a class="page-link" th:href="@{/board/list(page=0, category=${category}, keyword=${keyword})}">&laquo;&laquo;</a>
-        </li>
-
-        <!-- 이전 페이지 링크 -->
-        <li class="page-item" th:classappend="${boardList.isFirst() ? 'disabled' : ''}">
-            <a class="page-link" th:href="@{/board/list(page=${currentPage - 2}, category=${category}, keyword=${keyword})}">&laquo;</a>
-        </li>
-
-        <!-- 페이지 번호 링크 -->
-        <span th:each="page : ${#numbers.sequence(startPage, endPage)}">
+            <!-- 페이지 번호 링크 -->
+            <span th:each="page : ${#numbers.sequence(startPage, endPage)}">
             <li class="page-item" th:classappend="${page == currentPage ? 'active' : ''}">
-                <a class="page-link" th:href="@{/board/list(page=${page - 1}, category=${category}, keyword=${keyword})}" th:text="${page}"></a>
+                <a class="page-link"
+                   th:href="@{/board/list(page=${page - 1}, category=${category}, keyword=${keyword})}"
+                   th:text="${page}"></a>
             </li>
         </span>
 
-        <!-- 다음 페이지 링크 -->
-        <li class="page-item" th:classappend="${boardList.isLast() ? 'disabled' : ''}">
-            <a class="page-link" th:href="@{/board/list(page=${boardList.number + 1}, category=${category}, keyword=${keyword})}">&raquo;</a>
-        </li>
+            <!-- 다음 페이지 링크 -->
+            <li class="page-item" th:classappend="${boardList.isLast() ? 'disabled' : ''}">
+                <a class="page-link"
+                   th:href="@{/board/list(page=${boardList.number + 1}, category=${category}, keyword=${keyword})}">&raquo;</a>
+            </li>
 
-        <!-- 마지막 페이지 링크 -->
-        <li class="page-item" th:classappend="${boardList.isLast() ? 'disabled' : ''}">
-            <a class="page-link" th:href="@{/board/list(page=${boardList.totalPages - 1}, category=${category}, keyword=${keyword})}">&raquo;&raquo;</a>
-        </li>
-    </ul>
-</nav>
+            <!-- 마지막 페이지 링크 -->
+            <li class="page-item" th:classappend="${boardList.isLast() ? 'disabled' : ''}">
+                <a class="page-link"
+                   th:href="@{/board/list(page=${boardList.totalPages - 1}, category=${category}, keyword=${keyword})}">&raquo;&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+</div>
 
 </body>
-
 </html>

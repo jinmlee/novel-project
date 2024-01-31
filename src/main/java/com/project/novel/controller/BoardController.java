@@ -2,6 +2,7 @@ package com.project.novel.controller;
 
 import com.project.novel.dto.BoardDto;
 import com.project.novel.dto.CommentDto;
+import com.project.novel.dto.CustomUserDetails;
 import com.project.novel.entity.BoardEntity;
 import com.project.novel.service.BoardService;
 import com.project.novel.service.CommentService;
@@ -9,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,20 +30,27 @@ public class BoardController {
 
     public final CommentService commentService;
 
+
     @GetMapping("/write")
     public String write(){
         return "/board/write";
     }
 
     @PostMapping("/write")
-    public String writeProcess(@ModelAttribute BoardDto boardDto) throws IOException {
+    public String writeProcess(@ModelAttribute BoardDto boardDto,
+                               @AuthenticationPrincipal CustomUserDetails customUserDetails) throws IOException {
+
+        String username = customUserDetails.getUsername();
+        // BoardDto에 사용자 이름을 설정하는 메서드가 있다고 가정
+        boardDto.setMemberId(username);
+
         log.info("boardDto==={}",boardDto);
         boardService.save(boardDto);
         return "redirect:/board/list";
     }
 
     @GetMapping("/list")
-    public String findAll(@PageableDefault(page = 0, size = 5) Pageable pageable,
+    public String findAll(@PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                           @RequestParam(required = false) String category,
                           @RequestParam(required = false) String keyword,
                           Model model) {
