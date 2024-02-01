@@ -21,11 +21,24 @@ public class CommentService {
     private final BoardRepository boardRepository;
 
 
+    /*public Long save(CommentDto commentDto) {
+        // 부모 엔티티 조회
+        Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(commentDto.getBoardId());
+        if (optionalBoardEntity.isPresent()){
+            BoardEntity boardEntity = optionalBoardEntity.get();
+            CommentEntity commentEntity = CommentEntity.toSaveEntity(commentDto, boardEntity);
+            return commentRepository.save(commentEntity).getId();
+        } else {
+            return null;
+        }
+    }*/
+
     public Long save(CommentDto commentDto) {
         // 부모 엔티티 조회
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(commentDto.getBoardId());
         if (optionalBoardEntity.isPresent()){
             BoardEntity boardEntity = optionalBoardEntity.get();
+            // CommentDto.toSaveEntity 메서드 업데이트
             CommentEntity commentEntity = CommentEntity.toSaveEntity(commentDto, boardEntity);
             return commentRepository.save(commentEntity).getId();
         } else {
@@ -46,4 +59,10 @@ public class CommentService {
         return commentDtoList;
 
     }
+
+    public List<CommentEntity> getAllComments() {
+        // 댓글 목록을 가져오는 로직
+        return commentRepository.findAll();
+    }
+
 }

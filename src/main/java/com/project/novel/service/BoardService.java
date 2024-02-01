@@ -11,6 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -123,16 +126,4 @@ public class BoardService {
         return boardRepository.findAll(pageable).map(BoardDto::toBoardDto);
     }
 
-   /* public Page<BoardDto> paging(Pageable pageable) {
-        //int page = pageable.getPageNumber() - 1;
-
-        int page = Math.max(pageable.getPageNumber(), 0); // 페이지 번호가 0 미만이 되지 않도록 보장
-        int pageLimit = 5;
-
-        Page<BoardEntity> boardEntities =
-                boardRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC,"id")));
-
-        Page<BoardDto> boardDtos = boardEntities.map(board -> new BoardDto(board.getId(), board.getMemberId(), board.getSubject(), board.getHit(), board.getCreate_date()));
-        return boardDtos;
-    }*/
 }

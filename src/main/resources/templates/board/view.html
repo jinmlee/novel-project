@@ -1,135 +1,171 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>view</title>
-    <link rel="stylesheet" href="/css/bootstrap.css">
-    <link rel="stylesheet" href="/css/layout.css">
-    <script src="/js/bootstrap.bundle.js"></script>
-    <script src="/js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
 
-<table class="table">
-    <tbody>
-    <tr>
-        <th scope="row">subject</th>
-        <td th:text="${board.subject}"></td>
-        <th scope="row">hit</th>
-        <td th:text="${board.hit}"></td>
-    </tr>
-    <tr>
-        <th scope="row">writer</th>
-        <td th:text="${board.member_id}"></td>
-        <th>date</th>
-        <td th:text="${board.createDate}"></td>
-    </tr>
-    <tr>
-        <th scope="row">content</th>
-        <td colspan="3">
-            <div th:text="${board.content}" style="min-height: 300px"></div>
-        </td>
-    </tr>
-    <tr th:if="${board.fileAttached == 1}">
-        <th scope="row">image</th>
-        <td th:each="fileName: ${board.copyFileName}">
-            <img th:src="@{|/upload/${fileName}|}" alt="">
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div layout:fragment="content" class="container">
+    <div>
+        <table class="table">
+            <tbody>
+            <tr>
+                <th scope="row">subject</th>
+                <td th:text="${board.subject}"></td>
+                <th scope="row">hit</th>
+                <td th:text="${board.hit}"></td>
+            </tr>
+            <tr>
+                <th scope="row">writer</th>
+                <td th:text="${board.member_id}"></td>
+                <th>date</th>
+                <td th:text="${board.createDate}"></td>
+            </tr>
+            <tr>
+                <th scope="row">content</th>
+                <td colspan="3">
+                    <div th:text="${board.content}" style="min-height: 300px"></div>
+                </td>
+            </tr>
+            <tr th:if="${board.fileAttached == 1}">
+                <th scope="row">image</th>
+                <td th:each="fileName: ${board.copyFileName}">
+                    <img th:src="@{|/upload/${fileName}|}" alt="">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
 
-<div class="mt-5 d-flex justify-content-center">
-    <button onclick="listReq()" class="btn btn-primary">목록</button>
-    <button onclick="modifyReq()" class="btn btn-primary">수정</button>
-    <button onclick="deleteReq()" class="btn btn-primary">삭제</button>
-</div>
+    <div class="mt-5 d-flex justify-content-center">
+        <button onclick="listReq()" class="btn btn-dark text-light">목록</button>
+        <button onclick="modifyReq()" class="btn btn-dark text-light">수정</button>
+        <button onclick="deleteReq()" class="btn btn-dark text-light">삭제</button>
+    </div>
 
 
-<!--comment-->
-<div id="comment-write">
-    <input type="text" id="commentWriter" placeholder="작성자">
-    <input type="text" id="commentContent" placeholder="내용">
-    <button id="comment-write-btn" onclick="commentWrite()">댓글 작성</button>
-</div>
+    <!-- 댓글 컨테이너 -->
+    <div class="comment-container">
+        <!-- 댓글 리스트 -->
+        <div class="comment" th:each="comment: ${commentList}">
+            <span class="comment-author" th:text="${comment.commentWriter}"></span>
+            <p class="comment-content" th:text="${comment.commentContent}"></p>
+            <span class="comment-date" th:text="${comment.commentCreateDate}"></span>
 
-<div id="comment-list">
-    <table>
-        <tr>
-            <th>댓글번호</th>
-            <th>작성자</th>
-            <th>내용</th>
-            <th>작성시간</th>
-        </tr>
-        <tr th:each="comment: ${commentList}">
-            <td th:text="${comment.id}"></td>
-            <td th:text="${comment.commentWriter}"></td>
-            <td th:text="${comment.commentContent}"></td>
-            <td th:text="${comment.commentCreateDate}"></td>
-        </tr>
-    </table>
-</div>
+        </div>
+
+        <!-- 댓글 작성 폼 -->
+        <div class="comment-form">
+            <input type="text" id="commentWriter" placeholder="작성자">
+            <textarea placeholder="댓글을 입력하세요" id="commentContent"></textarea>
+            <button id="comment-write-btn" onclick="commentWrite()">댓글 작성</button>
+        </div>
+    </div>
 
 
-<script th:inline="javascript">
 
-    const commentWrite = () => {
-        const writer = document.getElementById("commentWriter").value;
-        const content = document.getElementById("commentContent").value;
-        console.log("작성자 : ", writer);
-        console.log("내용 : ", content);
-        const id = [[${board.id}]];
 
-        $.ajax({
-            //요청 방식 : post, 요청 주소 : /comment/write, 요청 데이터 : 작성자, 작성 내용, 게시글 번호
-            type: "post",
-            url: "/comment/write",
-            data: {
-                "commentWriter" : writer,
-                "commentContent" : content,
-                "boardId" : id
-            },
-            success: function (res) {
-                console.log("요청성공", res);
-                let output = "<table>";
-                output += "<tr><th>댓글번호</th>";
-                output += "<th>작성자</th>";
-                output += "<th>내용</th>";
-                output += "<th>작성시간</th></tr>";
-                for (let i in res) {
-                    output += "<tr>";
-                    output += "<td>" + res[i].id + "</td>";
-                    output += "<td>" + res[i].commentWriter + "</td>";
-                    output += "<td>" + res[i].commentContent + "</td>";
-                    output += "<td>" + res[i].commentCreateDate + "</td>";
-                    output += "</tr>";
+    <script th:inline="javascript">
+
+        const commentWrite = () => {
+            const writer = document.getElementById("commentWriter").value;
+            const content = document.getElementById("commentContent").value;
+            console.log("작성자 : ", writer);
+            console.log("내용 : ", content);
+            const id = [[${board.id}]];
+
+            $.ajax({
+                //요청 방식 : post, 요청 주소 : /comment/write, 요청 데이터 : 작성자, 작성 내용, 게시글 번호
+                type: "post",
+                url: "/comment/write",
+                data: {
+                    "commentWriter" : writer,
+                    "commentContent" : content,
+                    "boardId" : id
+                },
+                success: function (res) {
+                    console.log("요청성공", res);
+                    let output = "<table>";
+                    output += "<tr><th>댓글번호</th>";
+                    output += "<th>작성자</th>";
+                    output += "<th>내용</th>";
+                    output += "<th>작성시간</th></tr>";
+                    for (let i in res) {
+                        output += "<tr>";
+                        output += "<td>" + (res[i].id || '') + "</td>";
+                        output += "<td>" + res[i].commentWriter + "</td>";
+                        output += "<td>" + res[i].commentContent + "</td>";
+                        output += "<td>" + res[i].commentCreateDate + "</td>";
+                        output += "</tr>";
+                    }
+                    output += "</table>";
+                    document.getElementById('comment-list').innerHTML = output;
+                    document.getElementById('commentWriter').value = '';
+                    document.getElementById('commentContent').value = '';
+                },
+                error: function(err) {
+                    console.log("요청 실패", err);
                 }
-                output += "</table>";
-                document.getElementById('comment-list').innerHTML = output;
-                document.getElementById('commentWriter').value = '';
-                document.getElementById('commentContent').value = '';
-            },
-            error: function(err) {
-                console.log("요청 실패", err);
-            }
-        });
-    }
-    const listReq = () => {
-        console.log("목록 요청");
-        const page = [[${currentPage}]] || 1; // 페이지 번호가 없는 경우 기본 값으로 1을 사용
-        location.href = "/board/list?page=" + (page - 1);
-    }
-    const modifyReq = () => {
-        console.log("수정 요청");
-        const id = [[${board.id}]];
-        location.href = "/board/modify/" + id;
-    }
-    const deleteReq = () => {
-        console.log("삭제 요청");
-        const id = [[${board.id}]];
-        location.href = "/board/delete/" + id;
-    }
+            });
+        }
 
-</script>
-</body>
+        /*const deleteComment = (commentId) => {
+            if (confirm('댓글을 삭제하시겠습니까?')) {
+                $.ajax({
+                    type: "post",
+                    url: "/comment/delete",
+                    data: {
+                        "commentId": commentId
+                    },
+                    success: function (res) {
+                        console.log("댓글 삭제 성공", res);
+                        // 댓글 삭제 후 댓글 목록을 갱신합니다.
+                        refreshCommentList(res);
+                    },
+                    error: function (err) {
+                        console.log("댓글 삭제 실패", err);
+                    }
+                });
+            }
+        }
+
+        // 댓글 삭제 후 목록을 갱신하는 헬퍼 함수
+        const refreshCommentList = (comments) => {
+            let output = "<table>";
+            output += "<tr><th>댓글번호</th>";
+            output += "<th>작성자</th>";
+            output += "<th>내용</th>";
+            output += "<th>작성시간</th></tr>";
+            for (let i in comments) {
+                output += "<tr>";
+                output += "<td>" + comments[i].id + "</td>";
+                output += "<td>" + comments[i].commentWriter + "</td>";
+                output += "<td>" + comments[i].commentContent + "</td>";
+                output += "<td>" + comments[i].commentCreateDate + "</td>";
+                output += "<td><button onclick=\"deleteComment(" + comments[i].id + ")\" class=\"btn btn-danger btn-sm\">삭제</button></td>";
+                output += "</tr>";
+            }
+            output += "</table>";
+            document.getElementById('comment-list').innerHTML = output;
+        }*/
+
+
+        const listReq = () => {
+            console.log("목록 요청");
+            const page = [[${currentPage}]] || 1; // 페이지 번호가 없는 경우 기본 값으로 1을 사용
+            location.href = "/board/list?page=" + (page - 1);
+        }
+        const modifyReq = () => {
+            console.log("수정 요청");
+            const id = [[${board.id}]];
+            location.href = "/board/modify/" + id;
+        }
+        const deleteReq = () => {
+            console.log("삭제 요청");
+            const id = [[${board.id}]];
+            location.href = "/board/delete/" + id;
+        }
+    </script>
+</div>
+
+</html>
+

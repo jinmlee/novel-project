@@ -32,4 +32,5 @@ public class CommentDto {
         commentDto.setBoardId(boardId);
         return commentDto;
     }
+
 }
