@@ -58,7 +58,7 @@ public class BoardController {
         // 검색 조건과 페이징 정보를 사용하여 게시판 목록을 조회
         Page<BoardDto> boardList = boardService.searchAndPaging(category, keyword, pageable);
 
-        int blockLimit = 5;
+        int blockLimit = 10;
 
         // Pageable의 페이지 번호는 0부터 시작하므로 사용자 인터페이스에서는 1부터 시작하도록 1을 더함
         int currentPage = pageable.getPageNumber() + 1;

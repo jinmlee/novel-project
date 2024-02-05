@@ -111,16 +111,14 @@ public class BoardService {
 
     // 보통은 이런 경우 QueryDSL을 사용
     public Page<BoardDto> searchAndPaging(String category, String keyword, Pageable pageable) {
-        // 검색 유형(category)과 검색어(keyword)가 제공되었는지 확인합니다.
         if (category != null && !category.isEmpty() && keyword != null && !keyword.isEmpty()) {
-            // 검색 유형에 따라 적절한 검색 로직을 실행합니다.
 
             if ("title".equals(category)) {
                 return boardRepository.findBySubjectContaining(keyword, pageable).map(BoardDto::toBoardDto);
             } else if ("content".equals(category)) {
                 return boardRepository.findByContentContaining(keyword, pageable).map(BoardDto::toBoardDto);
             } else if ("writer".equals(category)) {
-                return boardRepository.findByMemberId(keyword, pageable).map(BoardDto::toBoardDto);
+                return boardRepository.findByMemberIdContaining(keyword, pageable).map(BoardDto::toBoardDto);
             }
         }
         return boardRepository.findAll(pageable).map(BoardDto::toBoardDto);

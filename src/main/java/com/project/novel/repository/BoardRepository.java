@@ -29,7 +29,7 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
     Page<BoardEntity> findByContentContaining(String content, Pageable pageable);
 
     // 작성자 아이디로 검색
-    Page<BoardEntity> findByMemberId(String writerId, Pageable pageable);
+    Page<BoardEntity> findByMemberIdContaining(String writerId, Pageable pageable);
 
 
 }
