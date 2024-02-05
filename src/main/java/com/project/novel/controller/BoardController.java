@@ -12,7 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -79,13 +81,19 @@ public class BoardController {
 
     @GetMapping("/{id}")
     public String findById(@PathVariable Long id, Model model,
-                           @RequestParam(value = "page", defaultValue = "0") int page) {
+                           @RequestParam(value = "page", defaultValue = "0") int page,
+                           @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         boardService.updateHit(id);
         BoardDto boardDto = boardService.findById(id);
-
         List<CommentDto> commentDtoList = commentService.findAll(id);
-        model.addAttribute("commentList", commentDtoList);
+        String currentUsername = customUserDetails.getUsername();
 
+        boolean permitModify = boardService.checkModifyPermission(id, currentUsername);
+        boolean permitDelete = boardService.checkDeletePermission(id, customUserDetails.getUsername());
+
+        model.addAttribute("commentList", commentDtoList);
+        model.addAttribute("permitModify", permitModify);
+        model.addAttribute("permitDelete", permitDelete);
         model.addAttribute("board", boardDto);
         model.addAttribute("currentPage", page); // 현재 페이지 번호를 모델에 추가
         return "/board/view";
@@ -93,22 +101,42 @@ public class BoardController {
 
 
     @GetMapping("/modify/{id}")
-    public String modifyForm(@PathVariable Long id, Model model){
+    public String modifyForm(@PathVariable Long id, Model model,
+                             @AuthenticationPrincipal CustomUserDetails customUserDetails){
         BoardDto boardDto = boardService.findById(id);
+        String currentUsername = customUserDetails.getUsername();
+        boolean permitModify = boardService.checkModifyPermission(id, currentUsername);
+        log.info("==={}",permitModify);
         model.addAttribute("boardModify",boardDto);
+        model.addAttribute("permitModify", permitModify);
         return "/board/modify";
     }
 
     @PostMapping("/modify")
-    public String modify(@ModelAttribute BoardDto boardDto, Model model){
-        BoardDto board = boardService.modify(boardDto);
-        model.addAttribute("board",board);
+    public String modify(@ModelAttribute BoardDto boardDto, Model model,
+                         @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        String currentUsername = customUserDetails.getUsername();
+
+        // 수정 권한 확인
+        boolean permitModify = boardService.checkModifyPermission(boardDto.getId(), currentUsername);
+
+        if (permitModify) {
+            BoardDto board = boardService.modify(boardDto);
+            model.addAttribute("board", board);
+        } else {
+            // 수정 권한이 없는 경우 에러 메시지 추가
+            model.addAttribute("errorMessage", "수정 권한이 없습니다.");
+        }
         return "/board/view";
     }
 
+
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id){
-        boardService.delete(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        boardService.delete(id, currentUsername);
         return "redirect:/board/list";
     }
 

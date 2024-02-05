@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -98,13 +99,22 @@ public class BoardService {
         }
     }
 
+    @Transactional
     public BoardDto modify(BoardDto boardDto) {
         BoardEntity boardEntity = BoardEntity.toModifyEntity(boardDto);
         boardRepository.save(boardEntity);
         return findById(boardDto.getId());
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, String currentUsername) {
+        // 게시글 작성자 확인
+        String boardWriter = boardRepository.findBoardWriterById(id);
+
+        if (!currentUsername.equals(boardWriter)) {
+            // 현재 로그인한 사용자와 게시글 작성자가 다를 경우 예외 발생
+            throw new AccessDeniedException("삭제 권한이 없습니다.");
+        }
+
         boardRepository.deleteById(id);
     }
 
@@ -124,4 +134,19 @@ public class BoardService {
         return boardRepository.findAll(pageable).map(BoardDto::toBoardDto);
     }
 
+    public boolean checkDeletePermission(Long id, String username) {
+        // 게시글 작성자 확인
+        String boardWriter = boardRepository.findBoardWriterById(id);
+
+        // 현재 로그인한 사용자와 게시글 작성자가 일치하면 삭제 권한이 있다고 판단
+        return username.equals(boardWriter);
+    }
+
+    public boolean checkModifyPermission(Long id, String username) {
+        // 게시글 작성자 확인
+        String boardWriter = boardRepository.findBoardWriterById(id);
+
+        // 현재 로그인한 사용자와 게시글 작성자가 일치하면 수정 권한이 있다고 판단
+        return username.equals(boardWriter);
+    }
 }
