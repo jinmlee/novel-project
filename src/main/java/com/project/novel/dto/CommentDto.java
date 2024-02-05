@@ -4,12 +4,14 @@ import com.project.novel.entity.CommentEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class CommentDto {
 
     private Long id;
@@ -33,4 +35,9 @@ public class CommentDto {
         return commentDto;
     }
 
+    public static List<CommentDto> from(List<CommentEntity> commentEntityList, Long boardId) {
+        return commentEntityList.stream()
+                .map(commentEntity -> toCommentDto(commentEntity, boardId))
+                .toList();
+    }
 }

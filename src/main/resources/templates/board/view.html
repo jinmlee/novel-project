@@ -45,81 +45,121 @@
 
     <!-- 댓글 컨테이너 -->
     <div class="comment-container">
-        <!-- 댓글 리스트 -->
-        <div class="comment" th:each="comment: ${commentList}">
-            <span class="comment-author" th:text="${comment.commentWriter}"></span>
-            <p class="comment-content" th:text="${comment.commentContent}"></p>
-            <span class="comment-date" th:text="${comment.commentCreateDate}"></span>
-
-        </div>
+        <!-- 댓글 리스트  중복 생성 부분으로 제거. api를 통해서 가져옴  -->
 
         <!-- 댓글 작성 폼 -->
         <div class="comment-form">
-            <input type="text" id="commentWriter" placeholder="작성자">
             <textarea placeholder="댓글을 입력하세요" id="commentContent"></textarea>
             <button id="comment-write-btn" onclick="commentWrite()">댓글 작성</button>
         </div>
     </div>
 
 
-
-
     <script th:inline="javascript">
 
+        $(document).ready(function() {
+            // 페이지 로드 시 서버로부터 댓글 목록을 가져오는 함수
+            fetchCommentsAndUpdate();
+            function fetchCommentsAndUpdate() {
+                $.ajax({
+                    type: "GET",
+                    url: "/comment/list", // 서버의 댓글 목록 API 경로
+                    data: {
+                        "boardId": [[${board.id}]] // 현재 게시글 ID
+                    },
+                    success: function (comments) {
+                        updateCommentList(comments);
+                    },
+                    error: function (err) {
+                        console.log("댓글 목록 가져오기 실패", err);
+                    }
+                });
+            }
+        });
+
         const commentWrite = () => {
-            const writer = document.getElementById("commentWriter").value;
             const content = document.getElementById("commentContent").value;
-            console.log("작성자 : ", writer);
-            console.log("내용 : ", content);
             const id = [[${board.id}]];
 
             $.ajax({
-                //요청 방식 : post, 요청 주소 : /comment/write, 요청 데이터 : 작성자, 작성 내용, 게시글 번호
                 type: "post",
-                url: "/comment/write",
+                url: "/comment/write1",
                 data: {
-                    "commentWriter" : writer,
-                    "commentContent" : content,
-                    "boardId" : id
+                    "commentContent": content,
+                    "boardId": id
                 },
                 success: function (res) {
                     console.log("요청성공", res);
-                    let output = "<table>";
-                    output += "<tr><th>댓글번호</th>";
-                    output += "<th>작성자</th>";
-                    output += "<th>내용</th>";
-                    output += "<th>작성시간</th></tr>";
-                    for (let i in res) {
-                        output += "<tr>";
-                        output += "<td>" + (res[i].id || '') + "</td>";
-                        output += "<td>" + res[i].commentWriter + "</td>";
-                        output += "<td>" + res[i].commentContent + "</td>";
-                        output += "<td>" + res[i].commentCreateDate + "</td>";
-                        output += "</tr>";
-                    }
-                    output += "</table>";
-                    document.getElementById('comment-list').innerHTML = output;
-                    document.getElementById('commentWriter').value = '';
+                    updateCommentList(res);
+
                     document.getElementById('commentContent').value = '';
                 },
-                error: function(err) {
+                error: function (err) {
                     console.log("요청 실패", err);
                 }
             });
         }
 
-        /*const deleteComment = (commentId) => {
+        // 댓글 목록을 업데이트하는 함수 정의
+        const updateCommentList = (comments) => {
+            let commentList = document.querySelector('.comment-list');
+            if (!commentList) {
+                commentList = document.createElement('div');
+                commentList.className = 'comment-list';
+                document.querySelector('.comment-container').appendChild(commentList);
+            }
+
+            commentList.innerHTML = "";
+
+            comments.forEach(comment => {
+                let commentDiv = document.createElement('div');
+                commentDiv.className = 'comment';
+
+                let authorSpan = document.createElement('span');
+                authorSpan.className = 'comment-author';
+                authorSpan.innerText = comment.commentWriter;
+
+                let contentP = document.createElement('p');
+                contentP.className = 'comment-content';
+                contentP.innerText = comment.commentContent;
+
+                let dateSpan = document.createElement('span');
+                dateSpan.className = 'comment-date';
+                dateSpan.innerText = comment.commentCreateDate;
+
+
+                let deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger btn-sm';
+                deleteBtn.innerText = '삭제';
+                deleteBtn.onclick = function() {
+                    deleteComment(comment.id, comment.boardId);
+                };
+
+                commentDiv.appendChild(authorSpan);
+                commentDiv.appendChild(contentP);
+                commentDiv.appendChild(dateSpan);
+                commentDiv.appendChild(deleteBtn);
+
+                commentList.appendChild(commentDiv);
+            });
+        }
+
+
+
+        // 스크립트 태그 내에 추가
+        const deleteComment = (commentId, boardId) => {
             if (confirm('댓글을 삭제하시겠습니까?')) {
                 $.ajax({
-                    type: "post",
+                    type: "delete",
                     url: "/comment/delete",
                     data: {
-                        "commentId": commentId
+                        "commentId": commentId,
+                        "boardId": boardId
                     },
                     success: function (res) {
                         console.log("댓글 삭제 성공", res);
-                        // 댓글 삭제 후 댓글 목록을 갱신합니다.
-                        refreshCommentList(res);
+                        // 댓글 목록 갱신
+                        updateCommentList(res);
                     },
                     error: function (err) {
                         console.log("댓글 삭제 실패", err);
@@ -127,27 +167,6 @@
                 });
             }
         }
-
-        // 댓글 삭제 후 목록을 갱신하는 헬퍼 함수
-        const refreshCommentList = (comments) => {
-            let output = "<table>";
-            output += "<tr><th>댓글번호</th>";
-            output += "<th>작성자</th>";
-            output += "<th>내용</th>";
-            output += "<th>작성시간</th></tr>";
-            for (let i in comments) {
-                output += "<tr>";
-                output += "<td>" + comments[i].id + "</td>";
-                output += "<td>" + comments[i].commentWriter + "</td>";
-                output += "<td>" + comments[i].commentContent + "</td>";
-                output += "<td>" + comments[i].commentCreateDate + "</td>";
-                output += "<td><button onclick=\"deleteComment(" + comments[i].id + ")\" class=\"btn btn-danger btn-sm\">삭제</button></td>";
-                output += "</tr>";
-            }
-            output += "</table>";
-            document.getElementById('comment-list').innerHTML = output;
-        }*/
-
 
         const listReq = () => {
             console.log("목록 요청");

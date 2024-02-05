@@ -1,16 +1,20 @@
 package com.project.novel.controller;
 
 import com.project.novel.dto.CommentDto;
+import com.project.novel.dto.CustomUserDetails;
 import com.project.novel.dto.JoinDto;
 import com.project.novel.entity.CommentEntity;
+import com.project.novel.entity.Member;
 import com.project.novel.service.BoardService;
 import com.project.novel.service.CommentService;
 import com.project.novel.service.MemberService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +30,9 @@ public class CommentController {
 
     private final CommentService commentService;
 
-
     @PostMapping("/write")
     public ResponseEntity write(@ModelAttribute CommentDto commentDto){
-        log.info("commentDto==={}",commentDto);
+
         Long saveResult = commentService.save(commentDto);
         if (saveResult != null){
             List<CommentDto> commentDtoList = commentService.findAll(commentDto.getBoardId());
@@ -39,5 +42,26 @@ public class CommentController {
         }
     }
 
+    @PostMapping("/write1")
+    public ResponseEntity write1(@ModelAttribute CommentDto commentDto){
+        commentService.saveRefactoring(commentDto);
+
+        return ResponseEntity.ok(commentService.findAllRefactoring(commentDto.getBoardId()));
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity delete(@RequestParam(value = "commentId", required = true) Long commentId,
+                                 @RequestParam(value = "boardId", required = true) Long boardId){
+        commentService.delete(commentId);
+
+        return new ResponseEntity<>(commentService.findAllRefactoring(boardId), HttpStatus.OK);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity list(@RequestParam(value = "boardId", required = true) Long boardId){
+        List<CommentDto> commentDtoList = commentService.findAllRefactoring(boardId);
+
+        return new ResponseEntity<>(commentDtoList, HttpStatus.OK);
+    }
 
 }
