@@ -118,6 +118,10 @@ public class BoardService {
         boardRepository.deleteById(id);
     }
 
+    public void delete(Long id) {
+        boardRepository.deleteById(id);
+    }
+
 
     // 보통은 이런 경우 QueryDSL을 사용
     public Page<BoardDto> searchAndPaging(String category, String keyword, Pageable pageable) {
@@ -149,4 +153,5 @@ public class BoardService {
         // 현재 로그인한 사용자와 게시글 작성자가 일치하면 수정 권한이 있다고 판단
         return username.equals(boardWriter);
     }
+
 }

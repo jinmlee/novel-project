@@ -90,10 +90,13 @@ public class BoardController {
 
         boolean permitModify = boardService.checkModifyPermission(id, currentUsername);
         boolean permitDelete = boardService.checkDeletePermission(id, customUserDetails.getUsername());
+        boolean isAdmin = customUserDetails.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
         model.addAttribute("commentList", commentDtoList);
         model.addAttribute("permitModify", permitModify);
         model.addAttribute("permitDelete", permitDelete);
+        model.addAttribute("isAdmin",isAdmin);
         model.addAttribute("board", boardDto);
         model.addAttribute("currentPage", page); // 현재 페이지 번호를 모델에 추가
         return "/board/view";
@@ -131,12 +134,31 @@ public class BoardController {
     }
 
 
-    @GetMapping("/delete/{id}")
+    /*@GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
 
         boardService.delete(id, currentUsername);
+        return "redirect:/board/list";
+    }*/
+
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Long id, Authentication authentication) {
+        String currentUsername = authentication.getName();
+
+        // 현재 사용자의 역할 확인 (예: "ROLE_USER", "ROLE_ADMIN")
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            // 관리자인 경우 모든 글 삭제 가능
+            boardService.delete(id);
+        } else {
+            // 일반 사용자의 경우 현재 사용자가 작성한 글만 삭제 가능
+            boardService.delete(id, currentUsername);
+        }
+
         return "redirect:/board/list";
     }
 
