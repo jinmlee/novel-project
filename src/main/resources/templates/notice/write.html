@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>write</title>
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <script src="/js/bootstrap.bundle.js"></script>
+</head>
+<div class="main">
+    <div class="container">
+        <h2>WRITE</h2>
+        <form method="post" action="/notice/write" enctype="multipart/form-data">
+
+            <div class="mb-3">
+                <label for="subject" class="form-label">subject</label>
+                <input type="text" class="form-control" placeholder="subject" name="subject">
+            </div>
+
+            <div class="mb-3">
+                <label for="content" class="form-label">content</label>
+                <textarea class="form-control" rows="5" id="content" name="content"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">password</label>
+                <input type="password" class="form-control" placeholder="password" name="password">
+            </div>
+
+            <div>
+                <input type="file" name="file" multiple>
+            </div>
+
+
+
+            <div class="mt-5">
+                <button class="btn btn-primary" id="btnSubmit">submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+</html>
