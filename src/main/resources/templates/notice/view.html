@@ -1,36 +1,34 @@
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/layout :: head(~{::title})">
-    <meta charset="UTF-8">
-    <title>home</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-</head>
-<body th:replace="layout/layout :: content(~{::content})">
-<content>
-<div class="container">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+
+<div layout:fragment="content" class="container">
     <div>
         <table class="table">
             <tbody>
             <tr>
                 <th scope="row">subject</th>
-                <td th:text="${board.subject}"></td>
+                <td th:text="${notice.subject}"></td>
                 <th scope="row">hit</th>
-                <td th:text="${board.hit}"></td>
+                <td th:text="${notice.hit}"></td>
             </tr>
             <tr>
                 <th scope="row">writer</th>
-                <td th:text="${board.member_id}"></td>
+                <td th:text="${notice.member_id}"></td>
                 <th>date</th>
-                <td th:text="${board.createDate}"></td>
+                <td th:text="${notice.createDate}"></td>
             </tr>
             <tr>
                 <th scope="row">content</th>
                 <td colspan="3">
-                    <div th:text="${board.content}" style="min-height: 300px"></div>
+                    <div th:text="${notice.content}" style="min-height: 300px"></div>
                 </td>
             </tr>
-            <tr th:if="${board.fileAttached == 1}">
+            <tr th:if="${notice.fileAttached == 1}">
                 <th scope="row">image</th>
-                <td th:each="fileName: ${board.copyFileName}">
+                <td th:each="fileName: ${notice.copyFileName}">
                     <img th:src="@{|/upload/${fileName}|}" alt="">
                 </td>
             </tr>
@@ -41,8 +39,10 @@
 
     <div class="mt-5 d-flex justify-content-center">
         <button onclick="listReq()" class="btn btn-dark text-light">목록</button>
-        <button th:if="${permitModify}" onclick="modifyReq()" class="btn btn-dark text-light">수정</button>
-        <button th:if="${permitDelete || isAdmin}" onclick="deleteReq()" th:attr="data-board-id=${board.id}" class="btn btn-dark text-light">삭제</button>
+        <div sec:authorize="hasRole('ADMIN')">
+            <button onclick="modifyReq()" class="btn btn-dark text-light">수정</button>
+            <button onclick="deleteReq()" th:attr="data-notice-id=${notice.id}" class="btn btn-dark text-light">삭제</button>
+        </div>
     </div>
 
 
@@ -66,9 +66,9 @@
             function fetchCommentsAndUpdate() {
                 $.ajax({
                     type: "GET",
-                    url: "/comment/list", // 서버의 댓글 목록 API 경로
+                    url: "/notice/comment/list", // 서버의 댓글 목록 API 경로
                     data: {
-                        "boardId": [[${board.id}]] // 현재 게시글 ID
+                        "noticeId": [[${notice.id}]] // 현재 게시글 ID
                     },
                     success: function (comments) {
                         updateCommentList(comments);
@@ -82,14 +82,14 @@
 
         const commentWrite = () => {
             const content = document.getElementById("commentContent").value;
-            const id = [[${board.id}]];
+            const id = [[${notice.id}]];
 
             $.ajax({
                 type: "post",
-                url: "/comment/write1",
+                url: "/notice/comment/write",
                 data: {
                     "commentContent": content,
-                    "boardId": id
+                    "noticeId": id
                 },
                 success: function (res) {
                     console.log("요청성공", res);
@@ -131,17 +131,29 @@
                 dateSpan.innerText = comment.commentCreateDate;
 
 
-                let deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn btn-danger btn-sm';
-                deleteBtn.innerText = '삭제';
-                deleteBtn.onclick = function() {
-                    deleteComment(comment.id, comment.boardId);
-                };
+                // let deleteBtn = document.createElement('button');
+                // deleteBtn.className = 'btn btn-danger btn-sm';
+                // deleteBtn.innerText = '삭제';
+                // deleteBtn.onclick = function() {
+                //     deleteComment(comment.id, comment.noticeId);
+                // };
 
                 commentDiv.appendChild(authorSpan);
                 commentDiv.appendChild(contentP);
                 commentDiv.appendChild(dateSpan);
-                commentDiv.appendChild(deleteBtn);
+                // commentDiv.appendChild(deleteBtn);
+
+                // 삭제 버튼을 조건부로 추가 서버에서 전달 받은 canDelete 값으로 true이면 활성화 한다.
+                if (comment.canDelete) {
+                    let deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn btn-danger btn-sm';
+                    deleteBtn.innerText = '삭제';
+                    deleteBtn.onclick = function() {
+                        deleteComment(comment.id, comment.noticeId);
+                    };
+                    commentDiv.appendChild(deleteBtn);
+                }
+
 
                 commentList.appendChild(commentDiv);
             });
@@ -150,14 +162,14 @@
 
 
         // 스크립트 태그 내에 추가
-        const deleteComment = (commentId, boardId) => {
+        const deleteComment = (commentId, noticeId) => {
             if (confirm('댓글을 삭제하시겠습니까?')) {
                 $.ajax({
                     type: "delete",
-                    url: "/comment/delete",
+                    url: "/notice/comment/delete",
                     data: {
                         "commentId": commentId,
-                        "boardId": boardId
+                        "noticeId": noticeId
                     },
                     success: function (res) {
                         console.log("댓글 삭제 성공", res);
@@ -174,24 +186,23 @@
         const listReq = () => {
             console.log("목록 요청");
             const page = [[${currentPage}]] || 1; // 페이지 번호가 없는 경우 기본 값으로 1을 사용
-            location.href = "/board/list?page=" + (page - 1);
+            location.href = "/notice/list?page=" + (page - 1);
         }
         const modifyReq = () => {
             console.log("수정 요청");
-            const id = [[${board.id}]];
-            location.href = "/board/modify/" + id;
+            const id = [[${notice.id}]];
+            location.href = "/notice/modify/" + id;
         }
         const deleteReq = () => {
             console.log("삭제 요청");
-            const boardId = document.querySelector('[data-board-id]').getAttribute('data-board-id');
-
+            const noticeId = document.querySelector('[data-notice-id]').getAttribute('data-notice-id');
+            alert("noticeId : " + noticeId);
             if (confirm('글을 삭제하시겠습니까?')) {
-                location.href = "/board/delete/" + boardId;
+                location.href = "/notice/delete/" + noticeId;
             }
         }
     </script>
 </div>
-</content>
-</body>
+
 </html>
 

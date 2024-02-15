@@ -26,7 +26,6 @@ public class AuthController {
         model.addAttribute("joinDto",new JoinDto());
         return "/auth/join";
     }
-
     @PostMapping("/join")
     public String joinProcess(@Valid @ModelAttribute JoinDto joinDto,
                               BindingResult bindingResult,
@@ -61,5 +60,11 @@ public class AuthController {
             return -1;
         else
             return authService.passwordCheck(secondPW);
+    }
+
+    @GetMapping("/access-denied")
+    public String accessDenied(@RequestParam(value = "error", defaultValue = "false") boolean error, Model model) {
+        model.addAttribute("error", error);
+        return "auth/access-denied";
     }
 }

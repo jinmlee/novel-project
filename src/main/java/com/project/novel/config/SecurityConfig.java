@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import java.util.UUID;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -26,6 +27,7 @@ public class SecurityConfig {
                         .requestMatchers("/img/**", "/auth/**","/css/**","/js/**","/images/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole(Grade.ROLE_ADMIN.getRole()) // ADMIN ROLE 만 접근 가능
+                        .requestMatchers("/notice/modify/**", "/notice/delete/**").hasRole(Grade.ROLE_ADMIN.getRole())
                         .anyRequest()
                         .authenticated())
                 .formLogin((form) -> form
@@ -53,5 +55,9 @@ public class SecurityConfig {
                 .csrf((csrf) -> csrf.disable());
         return httpSecurity.build();
     }
-}
 
+    @Bean
+    public AccessDeniedHandler customAccessDeniedHandler() {
+        return new CustomAccessDeniedHandler();
+    }
+}
