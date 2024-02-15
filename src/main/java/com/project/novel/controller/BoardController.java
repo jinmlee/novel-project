@@ -64,15 +64,19 @@ public class BoardController {
 
         // Pageable의 페이지 번호는 0부터 시작하므로 사용자 인터페이스에서는 1부터 시작하도록 1을 더함
         int currentPage = pageable.getPageNumber() + 1;
+        int totalPages = boardList.getTotalPages();
+        // 데이터가 없을 경우를 처리하여 항상 최소 1 페이지는 표시되도록 함
+        totalPages = Math.max(totalPages, 1);
 
         int startPage = Math.max(((currentPage - 1) / blockLimit) * blockLimit + 1, 1);
+        int endPage = Math.min(startPage + blockLimit - 1, totalPages);
 
-        int endPage = Math.min(startPage + blockLimit - 1, boardList.getTotalPages());
 
         model.addAttribute("boardList", boardList);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalPages", totalPages);
         model.addAttribute("category", category);
         model.addAttribute("keyword", keyword);
 
@@ -133,16 +137,6 @@ public class BoardController {
         return "/board/view";
     }
 
-
-    /*@GetMapping("/delete/{id}")
-    public String delete(@PathVariable Long id){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = authentication.getName();
-
-        boardService.delete(id, currentUsername);
-        return "redirect:/board/list";
-    }*/
-
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id, Authentication authentication) {
         String currentUsername = authentication.getName();
@@ -161,5 +155,4 @@ public class BoardController {
 
         return "redirect:/board/list";
     }
-
 }

@@ -13,12 +13,12 @@
                     </a>
                 </h1>
             </div>
-
-            <div sec:authorize="!isAuthenticated()">
+            <!-- 인증된 사용자만 보이게 변경 -->
+            <div sec:authorize="isAuthenticated()">
                 <div class="gnb_li">
                     <ul class="nav nav-pills">
                         <li class="mx-2">
-                            <a href="/admin/notice" class="gnb_login">
+                            <a href="/notice/list" class="gnb_login">
                                 <span class="gnb_bg"></span>
                                 <span class="gnb-bdr"></span>
                                 <span class="gnb_txt">공지사항</span>
