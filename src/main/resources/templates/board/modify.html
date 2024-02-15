@@ -1,16 +1,11 @@
-<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="layout/layout :: head(~{::title})">
     <meta charset="UTF-8">
-    <title>modify</title>
-    <link rel="stylesheet" href="/css/bootstrap.css">
-    <link rel="stylesheet" href="/css/layout.css">
-    <script src="/js/bootstrap.bundle.js"></script>
-    <script src="/js/jquery-3.7.1.min.js"></script>
+    <title>home</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
-
-<body>
-<div class="main">
+<body th:replace="layout/layout :: content(~{::content})">
+<content>
     <div class="container">
         <h2>MODIFY</h2>
         <form action="/board/modify" method="post" name="modifyForm">
@@ -60,6 +55,6 @@
         }
     }
 </script>
-
+</content>
 </body>
 </html>

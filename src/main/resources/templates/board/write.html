@@ -1,13 +1,11 @@
-<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="layout/layout :: head(~{::title})">
     <meta charset="UTF-8">
-    <title>write</title>
-    <link rel="stylesheet" href="/css/bootstrap.css">
-    <link rel="stylesheet" href="/css/layout.css">
-    <script src="/js/bootstrap.bundle.js"></script>
+    <title>home</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
-<div class="main">
+<body th:replace="layout/layout :: content(~{::content})">
+<content>
     <div class="container">
         <h2>WRITE</h2>
         <form method="post" action="/board/write" enctype="multipart/form-data">
@@ -39,4 +37,6 @@
         </form>
     </div>
 </div>
+</content>
+</body>
 </html>

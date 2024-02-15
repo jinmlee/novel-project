@@ -1,12 +1,11 @@
-<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="layout/layout :: head(~{::title})">
     <meta charset="UTF-8">
-    <title>list</title>
-    <link rel="stylesheet" href="/css/bootstrap.css">
-    <link rel="stylesheet" href="/css/layout.css">
-    <script src="/js/bootstrap.bundle.js"></script>
+    <title>home</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
+<body th:replace="layout/layout :: content(~{::content})">
+<content>
 <div class="container">
     <table class="table">
         <tr>
@@ -56,6 +55,6 @@
 <a th:href="${boardList.last} ? '#' : @{/board/paging(page=${boardList.number + 2})}">next</a>
 <!-- 마지막 페이지로 이동 -->
 <a th:href="@{/board/paging(page=${boardList.totalPages})}">Last</a>
-
+</content>
 </body>
 </html>
