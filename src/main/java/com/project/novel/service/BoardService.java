@@ -30,9 +30,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BoardService {
 
-    public final BoardRepository boardRepository;
+    private final BoardRepository boardRepository;
 
-    public final BoardFileRepository boardFileRepository;
+    private final BoardFileRepository boardFileRepository;
 
 
     public void save(BoardDto boardDto) throws IOException {
